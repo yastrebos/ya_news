@@ -80,7 +80,7 @@ def comments_list(news, author):
             news=news,
             author=author,
             text=f'Tекст {index}',
-            date=today - timedelta(days=index)
+            created=today - timedelta(days=index)
         )
         for index in range(2)
     ]

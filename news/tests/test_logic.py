@@ -56,6 +56,24 @@ class TestCommentCreation(TestCase):
         self.assertEqual(comment.news, self.news)
         self.assertEqual(comment.author, self.user)
 
+    def test_user_cant_use_bad_words(self):
+        # Формируем данные для отправки формы; текст включает
+        # первое слово из списка стоп-слов.
+        bad_words_data = {'text': f'Какой-то текст, {BAD_WORDS[0]}, еще текст'}
+        # Отправляем запрос через авторизованный клиент.
+        response = self.auth_client.post(self.url, data=bad_words_data)
+        # Проверяем, есть ли в ответе ошибка формы.
+        self.assertFormError(
+            response,
+            form='form',
+            field='text',
+            errors=WARNING
+        )
+        # Дополнительно убедимся, что комментарий не был создан.
+        comments_count = Comment.objects.count()
+        self.assertEqual(comments_count, 0) 
+
+
 class TestCommentEditDelete(TestCase):
     # Тексты для комментариев не нужно дополнительно создавать 
     # (в отличие от объектов в БД), им не нужны ссылки на self или cls, 

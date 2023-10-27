@@ -22,17 +22,26 @@ def test_news_order(author_client, news_list):
     sorted_dates = sorted(all_dates, reverse=True)
     assert all_dates == sorted_dates
 
-# def test_comments_order(author_client, comments_list, id_news_for_args):
-#     Comment.objects.bulk_create(comments_list)
-#     detail_url = reverse('news:detail', args=id_news_for_args)
-#     response = author_client.get(detail_url)
-#     # Проверяем, что объект новости находится в словаре контекста
-#     # под ожидаемым именем - названием модели.
-#     assert 'news' in response.context
-#     # Получаем объект новости.
-#     news = response.context['news']
-#     # Получаем все комментарии к новости.
-#     all_comments = news.comment_set.all()
-#     # Проверяем, что время создания первого комментария в списке
-#     # меньше, чем время создания второго.
-#     assert all_comments[0].created < all_comments[1].created
+
+def test_comments_order(author_client, comments_list, id_news_for_args):
+    Comment.objects.bulk_create(comments_list)
+    detail_url = reverse('news:detail', args=id_news_for_args)
+    response = author_client.get(detail_url)
+    assert 'news' in response.context
+    news = response.context['news']
+    all_comments = news.comment_set.all()
+    assert all_comments[0].created < all_comments[1].created
+
+
+@pytest.mark.django_db
+def test_anonymous_client_has_no_form(client, id_news_for_args):
+    detail_url = reverse('news:detail', args=id_news_for_args)
+    response = client.get(detail_url)
+    assert 'form' not in response.context
+
+
+def test_authorized_client_has_form(reader_client, id_news_for_args):
+    detail_url = reverse('news:detail', args=id_news_for_args)
+    response = reader_client.get(detail_url)
+    assert 'form' in response.context
+
