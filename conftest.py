@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from news.models import News, Comment
 from django.conf import settings
 
+from news.forms import BAD_WORDS
+
 
 @pytest.fixture
 def author(django_user_model):
@@ -85,3 +87,17 @@ def comments_list(news, author):
         for index in range(2)
     ]
     return all_comments
+
+
+@pytest.fixture
+def form_data():
+    return {
+        'text': 'Новый текст',
+    }
+
+
+@pytest.fixture
+def bad_form_data():
+    return {
+        'text': f'Какой-то текст, {BAD_WORDS[0]}, еще текст',
+    }

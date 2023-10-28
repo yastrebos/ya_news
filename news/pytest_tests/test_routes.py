@@ -10,8 +10,7 @@ from django.urls import reverse
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    'name, args',  # Имя параметра функции.
-    # Значения, которые будут передаваться в name.
+    'name, args',
     (
         ('news:home', None),
         ('news:detail', pytest.lazy_fixture('id_news_for_args')),
